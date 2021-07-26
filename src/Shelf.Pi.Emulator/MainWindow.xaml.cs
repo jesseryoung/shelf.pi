@@ -1,25 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
-using System.Threading;
+using Shelf.Pi.Core;
 
 namespace Shelf.Pi.Emulator
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow : Window, ILightController
     {
 
         private const int ledSize = 10;
@@ -28,14 +24,18 @@ namespace Shelf.Pi.Emulator
 
         private List<Shape> leds = new List<Shape>();
 
-        enum VerticalRow {
+        private Dictionary<int, System.Drawing.Color> pendingUpdates = new Dictionary<int, System.Drawing.Color>();
+
+        enum VerticalRow
+        {
             TopDown = 24,
             TopUp = 120,
             BottomDown = 144,
             BottomUp = 242
         }
 
-        enum VerticalColumn {
+        enum VerticalColumn
+        {
             Column1 = 12,
             Column2 = 132,
             Column3 = 252,
@@ -45,13 +45,15 @@ namespace Shelf.Pi.Emulator
             Column7 = 732
         }
 
-        enum HorizontalRow {
+        enum HorizontalRow
+        {
             Top = 10,
             Middle = 132,
             Bottom = 254
         }
 
-        enum HorizontalColumn {
+        enum HorizontalColumn
+        {
             Column1Left = 24,
             Column1Right = 120,
             Column2Left = 144,
@@ -68,11 +70,13 @@ namespace Shelf.Pi.Emulator
             Column6Right = 720,
         }
 
-        enum LightRow {
+        enum LightRow
+        {
             Top = 64,
             Bottom = 186
         }
-        enum LightColumn {
+        enum LightColumn
+        {
             Column1 = 64,
             Column2 = 186,
             Column3 = 308,
@@ -140,24 +144,32 @@ namespace Shelf.Pi.Emulator
             this.leds.AddRange(CreateHorizontalSegment(HorizontalRow.Bottom, HorizontalColumn.Column4Left, 1));
             this.leds.AddRange(CreateHorizontalSegment(HorizontalRow.Bottom, HorizontalColumn.Column6Left, 1));
             this.leds.AddRange(CreateVerticalSegment(VerticalColumn.Column7, VerticalRow.BottomUp, -1));
-            
 
-            foreach(var s in this.leds) {
+
+            foreach (var s in this.leds)
+            {
                 this.drawingCanvas.Children.Add(s);
             }
 
+            Task.Run(() => {
+                var animation = new LightTail(this);
+                var cts = new CancellationTokenSource();
+                this.Closing += (sender, args) => cts.Cancel();
+                animation.Animate(cts.Token);
+            });
         }
 
-        private List<Shape> CreateVerticalSegment(VerticalColumn column, VerticalRow row, int direction) 
+        private List<Shape> CreateVerticalSegment(VerticalColumn column, VerticalRow row, int direction)
         {
             var segment = new List<Ellipse>();
 
             for (int i = 0; i < pixelsPerSegment; i++)
             {
-                var ellipse = new Ellipse() {
+                var ellipse = new Ellipse()
+                {
                     Width = ledSize,
                     Height = ledSize,
-                    Fill = Brushes.Red
+                    Fill = Brushes.Black
                 };
                 ellipse.SetValue(Canvas.RightProperty, (double)column);
                 ellipse.SetValue(Canvas.TopProperty, (double)row + direction * (i * (ledSize + spacing)));
@@ -166,15 +178,16 @@ namespace Shelf.Pi.Emulator
 
             return segment.Cast<Shape>().ToList();
         }
-        private List<Shape> CreateHorizontalSegment(HorizontalRow row, HorizontalColumn column, int direction) 
+        private List<Shape> CreateHorizontalSegment(HorizontalRow row, HorizontalColumn column, int direction)
         {
             var segment = new List<Ellipse>();
             for (int i = 0; i < pixelsPerSegment; i++)
             {
-                var ellipse = new Ellipse() {
+                var ellipse = new Ellipse()
+                {
                     Width = ledSize,
                     Height = ledSize,
-                    Fill = Brushes.Red
+                    Fill = Brushes.Black
                 };
                 ellipse.SetValue(Canvas.RightProperty, (double)column + direction * (i * (ledSize + spacing)));
                 ellipse.SetValue(Canvas.TopProperty, (double)row);
@@ -184,15 +197,34 @@ namespace Shelf.Pi.Emulator
             return segment.Cast<Shape>().ToList();
         }
 
-        private Shape CreateLight(LightRow row, LightColumn column) {
-            var ellipse = new Rectangle() {
+        private Shape CreateLight(LightRow row, LightColumn column)
+        {
+            var ellipse = new Rectangle()
+            {
                 Width = ledSize * 2,
                 Height = ledSize * 2,
-                Fill = Brushes.Red
+                Fill = Brushes.Black
             };
             ellipse.SetValue(Canvas.RightProperty, (double)column);
             ellipse.SetValue(Canvas.TopProperty, (double)row);
             return ellipse;
+        }
+
+        public void SetPixel(int index, System.Drawing.Color color)
+        {
+            this.pendingUpdates[index] = color;
+        }
+
+        public void Update()
+        {
+            this.Dispatcher.Invoke(() =>
+            {
+                foreach (var update in this.pendingUpdates)
+                {
+                    this.leds[update.Key].Fill = new SolidColorBrush(Color.FromArgb(update.Value.A, update.Value.R, update.Value.G, update.Value.B));
+                }
+                this.pendingUpdates.Clear();
+            });
         }
     }
 }
