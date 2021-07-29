@@ -6,6 +6,6 @@
         xmlns:local="clr-namespace:Shelf.Pi.Emulator"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
-    <Canvas x:Name="drawingCanvas" Background="Black">
+    <Canvas x:Name="drawingCanvas" Background="#060606">
     </Canvas>
 </Window>

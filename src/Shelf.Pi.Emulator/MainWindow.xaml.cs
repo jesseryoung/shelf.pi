@@ -9,6 +9,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using Shelf.Pi.Core;
+using Shelf.Pi.Core.Clock;
 
 namespace Shelf.Pi.Emulator
 {
@@ -92,53 +93,53 @@ namespace Shelf.Pi.Emulator
             // 1st Power Group
             this.leds.AddRange(CreateVerticalSegment(VerticalColumn.Column1, VerticalRow.TopUp, -1));
             this.leds.AddRange(CreateHorizontalSegment(HorizontalRow.Top, HorizontalColumn.Column1Left, 1));
-            this.leds.Add(CreateLight(LightRow.Top, LightColumn.Column1));
+            this.leds.Add(CreateLight(LightRow.Top, LightColumn.Column1)); 
             this.leds.AddRange(CreateVerticalSegment(VerticalColumn.Column2, VerticalRow.TopDown, 1));
             this.leds.AddRange(CreateHorizontalSegment(HorizontalRow.Middle, HorizontalColumn.Column1Right, -1));
-            this.leds.Add(CreateLight(LightRow.Bottom, LightColumn.Column1));
+            this.leds.Add(CreateLight(LightRow.Bottom, LightColumn.Column1)); 
             this.leds.AddRange(CreateVerticalSegment(VerticalColumn.Column1, VerticalRow.BottomDown, 1));
             this.leds.AddRange(CreateHorizontalSegment(HorizontalRow.Bottom, HorizontalColumn.Column1Left, 1));
             this.leds.AddRange(CreateVerticalSegment(VerticalColumn.Column2, VerticalRow.BottomUp, -1));
             this.leds.AddRange(CreateHorizontalSegment(HorizontalRow.Middle, HorizontalColumn.Column2Left, 1));
-            this.leds.Add(CreateLight(LightRow.Bottom, LightColumn.Column2));
+            this.leds.Add(CreateLight(LightRow.Bottom, LightColumn.Column2)); 
 
             // 2nd Power Group
             this.leds.AddRange(CreateVerticalSegment(VerticalColumn.Column3, VerticalRow.TopUp, -1));
             this.leds.AddRange(CreateHorizontalSegment(HorizontalRow.Top, HorizontalColumn.Column3Left, 1));
-            this.leds.Add(CreateLight(LightRow.Top, LightColumn.Column3));
+            this.leds.Add(CreateLight(LightRow.Top, LightColumn.Column3)); 
             this.leds.AddRange(CreateVerticalSegment(VerticalColumn.Column4, VerticalRow.TopDown, 1));
             this.leds.AddRange(CreateHorizontalSegment(HorizontalRow.Middle, HorizontalColumn.Column3Right, -1));
-            this.leds.Add(CreateLight(LightRow.Bottom, LightColumn.Column3));
+            this.leds.Add(CreateLight(LightRow.Bottom, LightColumn.Column3)); 
             this.leds.AddRange(CreateVerticalSegment(VerticalColumn.Column3, VerticalRow.BottomDown, 1));
             this.leds.AddRange(CreateHorizontalSegment(HorizontalRow.Bottom, HorizontalColumn.Column3Left, 1));
             this.leds.AddRange(CreateVerticalSegment(VerticalColumn.Column4, VerticalRow.BottomUp, -1));
             this.leds.AddRange(CreateHorizontalSegment(HorizontalRow.Middle, HorizontalColumn.Column4Left, 1));
-            this.leds.Add(CreateLight(LightRow.Bottom, LightColumn.Column4));
+            this.leds.Add(CreateLight(LightRow.Bottom, LightColumn.Column4)); 
 
 
             // 3rd Power Group
             this.leds.AddRange(CreateVerticalSegment(VerticalColumn.Column5, VerticalRow.TopUp, -1));
             this.leds.AddRange(CreateHorizontalSegment(HorizontalRow.Top, HorizontalColumn.Column5Left, 1));
-            this.leds.Add(CreateLight(LightRow.Top, LightColumn.Column5));
+            this.leds.Add(CreateLight(LightRow.Top, LightColumn.Column5)); 
             this.leds.AddRange(CreateVerticalSegment(VerticalColumn.Column6, VerticalRow.TopDown, 1));
             this.leds.AddRange(CreateHorizontalSegment(HorizontalRow.Middle, HorizontalColumn.Column5Right, -1));
-            this.leds.Add(CreateLight(LightRow.Bottom, LightColumn.Column5));
+            this.leds.Add(CreateLight(LightRow.Bottom, LightColumn.Column5)); 
             this.leds.AddRange(CreateVerticalSegment(VerticalColumn.Column5, VerticalRow.BottomDown, 1));
             this.leds.AddRange(CreateHorizontalSegment(HorizontalRow.Bottom, HorizontalColumn.Column5Left, 1));
             this.leds.AddRange(CreateVerticalSegment(VerticalColumn.Column6, VerticalRow.BottomUp, -1));
             this.leds.AddRange(CreateHorizontalSegment(HorizontalRow.Middle, HorizontalColumn.Column6Left, 1));
-            this.leds.Add(CreateLight(LightRow.Bottom, LightColumn.Column6));
+            this.leds.Add(CreateLight(LightRow.Bottom, LightColumn.Column6)); 
 
             // 4th Power Group
             this.leds.AddRange(CreateVerticalSegment(VerticalColumn.Column7, VerticalRow.TopUp, -1));
             this.leds.AddRange(CreateHorizontalSegment(HorizontalRow.Top, HorizontalColumn.Column6Right, -1));
-            this.leds.Add(CreateLight(LightRow.Top, LightColumn.Column6));
+            this.leds.Add(CreateLight(LightRow.Top, LightColumn.Column6)); 
 
             this.leds.AddRange(CreateHorizontalSegment(HorizontalRow.Top, HorizontalColumn.Column4Right, -1));
-            this.leds.Add(CreateLight(LightRow.Top, LightColumn.Column4));
+            this.leds.Add(CreateLight(LightRow.Top, LightColumn.Column4)); 
 
             this.leds.AddRange(CreateHorizontalSegment(HorizontalRow.Top, HorizontalColumn.Column2Right, -1));
-            this.leds.Add(CreateLight(LightRow.Top, LightColumn.Column2));
+            this.leds.Add(CreateLight(LightRow.Top, LightColumn.Column2)); 
 
             this.leds.AddRange(CreateHorizontalSegment(HorizontalRow.Bottom, HorizontalColumn.Column2Left, 1));
             this.leds.AddRange(CreateHorizontalSegment(HorizontalRow.Bottom, HorizontalColumn.Column4Left, 1));
@@ -151,11 +152,13 @@ namespace Shelf.Pi.Emulator
                 this.drawingCanvas.Children.Add(s);
             }
 
+            
+
             Task.Run(() => {
-                var animation = new LightTail(this);
+                var animation = new ClockController(this);
                 var cts = new CancellationTokenSource();
                 this.Closing += (sender, args) => cts.Cancel();
-                animation.Animate(cts.Token);
+                animation.Run(cts.Token);
             });
         }
 
@@ -175,6 +178,7 @@ namespace Shelf.Pi.Emulator
                 ellipse.SetValue(Canvas.TopProperty, (double)row + direction * (i * (ledSize + spacing)));
                 segment.Add(ellipse);
             }
+
 
             return segment.Cast<Shape>().ToList();
         }
