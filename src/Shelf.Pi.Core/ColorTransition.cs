@@ -52,7 +52,7 @@ namespace Shelf.Pi.Core
 
         public static ColorTransition GetRandomTranstion(int transitionFrames, Color? startColor = null)
         {
-            var color = startColor ?? colors[0];
+            var color = startColor ?? colors[random.Next(0, colors.Length)];
             var otherColors = colors.Where(c => c != color).ToArray();
             return new ColorTransition(color, otherColors[random.Next(0, otherColors.Length)], transitionFrames);
 
