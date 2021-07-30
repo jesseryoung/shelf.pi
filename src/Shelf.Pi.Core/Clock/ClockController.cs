@@ -19,7 +19,7 @@ namespace Shelf.Pi.Core.Clock
         public void Run(CancellationToken token)
         {
             
-            // Setup each light box to white
+            // Set each light box to white
             foreach(var light in Light.Lights) {
                 light.SetColor(this.lightController, Color.White.WithBrightness(.25));
             }
@@ -29,7 +29,7 @@ namespace Shelf.Pi.Core.Clock
             var timeBetweenFrames = 500;
             var colorTransition = ColorTransition.GetRandomTranstion(transitionFrames);
             
-            // Loop until ctrl+c is hit
+            // Loop until told to cancel
             while (false == token.IsCancellationRequested) 
             {
                 // Create a new transtion if the old one is complete
@@ -38,8 +38,9 @@ namespace Shelf.Pi.Core.Clock
                 }
                 var color = colorTransition.GetNextColor().WithBrightness(.25);
                 var now = DateTime.Now;
-                // Displaying a 12 hour clock not a 24 hour clock so get the correct hour
-                var hour = now.Hour > 12 ? now.Hour - 12 : now.Hour;
+
+                // Convert hour to 12 hour clock time
+                var hour = ((now.Hour + 11) % 12) + 1;
                 if (hour > 9)
                 {
                     // Since the first digit is shared with digit 2, flip the "1" so it shows 
