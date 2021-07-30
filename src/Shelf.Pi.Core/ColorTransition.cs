@@ -7,6 +7,7 @@ namespace Shelf.Pi.Core
     public class ColorTransition
     {
 
+        // Standard rainbow colors
         private static readonly Color[] colors = new[] {
             Color.FromArgb(255, 0, 0),
             Color.FromArgb(255, 165, 0),
@@ -36,9 +37,12 @@ namespace Shelf.Pi.Core
 
             var percentageComplete = (double)this.currentFrame / (double)this.transitionFrames;
 
-            var r = (int)((1.0 - percentageComplete) * this.StartColor.R + percentageComplete * this.EndColor.R + 0.5);
-            var g = (int)((1.0 - percentageComplete) * this.StartColor.G + percentageComplete * this.EndColor.G + 0.5);
-            var b = (int)((1.0 - percentageComplete) * this.StartColor.B + percentageComplete * this.EndColor.B + 0.5);
+            // Basic linear transition from one color to another
+            // At currentFrame = 0, each component should = StartColor
+            // At currentFrame = transitionFrames, each component should 0 EndColor
+            var r = (int)(((1.0 - percentageComplete) * this.StartColor.R) + (percentageComplete * this.EndColor.R));
+            var g = (int)(((1.0 - percentageComplete) * this.StartColor.G) + (percentageComplete * this.EndColor.G));
+            var b = (int)(((1.0 - percentageComplete) * this.StartColor.B) + (percentageComplete * this.EndColor.B));
 
             this.currentFrame++;
             return Color.FromArgb(r, g, b);
@@ -52,7 +56,9 @@ namespace Shelf.Pi.Core
 
         public static ColorTransition GetRandomTranstion(int transitionFrames, Color? startColor = null)
         {
+            // Choose a random color to start if none is provided
             var color = startColor ?? colors[random.Next(0, colors.Length)];
+            // Make sure not to choose that as the next end color
             var otherColors = colors.Where(c => c != color).ToArray();
             return new ColorTransition(color, otherColors[random.Next(0, otherColors.Length)], transitionFrames);
 

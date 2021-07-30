@@ -4,6 +4,7 @@ namespace Shelf.Pi.Core.Clock
 {
     public class Light
     {
+        // Hard coded list of indexes where the lights are
         public static int[] LightIndexes = new[] {
             18,
             37,

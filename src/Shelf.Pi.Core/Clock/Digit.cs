@@ -6,6 +6,8 @@ namespace Shelf.Pi.Core.Clock
     public class Digit
     {
 
+        // Map of numbers to index of segment provided
+        // 0 is the top segment going clockwise with 6 being the center segment
         private static Dictionary<byte, int[]> digitIndexMap = new()
         {
             { 0, new[] { 0, 1, 2, 3, 4, 5 } },
@@ -31,6 +33,8 @@ namespace Shelf.Pi.Core.Clock
         public void Show(ILightController lightController, byte number, Color color, bool oneFlipped = false)
         {
             this.Clear(lightController);
+
+            // If the 1 should be flipped, light up the segments on the left side of the digit instead of the default (right) side.
             if (oneFlipped && number == 1)
             {
                 this.segments[4].SetColor(lightController, color);
