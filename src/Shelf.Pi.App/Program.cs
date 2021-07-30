@@ -24,11 +24,16 @@ namespace Shelf.Pi.App
             using SpiDevice spi = SpiDevice.Create(settings);
 
             var lightController = new Program(spi);
-
-
-
             var clockController = new ClockController(lightController);
-            clockController.Run(CancellationToken.None);
+
+            var cts = new CancellationTokenSource();
+
+            Console.CancelKeyPress += (s,e) => {
+                e.Cancel = true;
+                cts.Cancel();
+            };
+
+            clockController.Run(cts.Token);
             lightController.Clear();
         }
 
