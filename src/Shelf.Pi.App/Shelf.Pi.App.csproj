@@ -3,6 +3,10 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net5.0</TargetFramework>
+    <PublishSingleFile>true</PublishSingleFile>
+    <SelfContained>true</SelfContained>
+    <RuntimeIdentifier>linux-arm</RuntimeIdentifier>
+    <PublishTrimmed>true</PublishTrimmed>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Iot.Device.Bindings" Version="1.5.0" />
@@ -10,5 +14,8 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Shelf.Pi.Core\Shelf.Pi.Core.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="./shelf.pi.app.service" CopyToOutputDirectory="Never" CopyToPublishDirectory="Always" />
   </ItemGroup>
 </Project>

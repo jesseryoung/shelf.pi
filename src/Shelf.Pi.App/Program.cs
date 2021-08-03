@@ -27,18 +27,52 @@ namespace Shelf.Pi.App
             var lightController = new Program(spi);
             var clockController = new ClockController(lightController);
 
-            var cts = new CancellationTokenSource();
+            Run(
+                start: token => clockController.Run(token),
+                cleanup: () => lightController.Clear()
+            );
+        }
 
-            // Notify ClockController when it's time to stop running
-            Console.CancelKeyPress += (s,e) => {
-                e.Cancel = true;
-                cts.Cancel();
-            };
+        public static void Run(Action<CancellationToken> start, Action cleanup)
+        {
+            // Shamelessly stolen from here: https://github.com/dotnet/runtime/issues/7120
+            using var cts = new CancellationTokenSource();
+            var done = new ManualResetEventSlim(false);
+            try
+            {
+                // When app requests shutodwn, tell the start action to start a shutdown
+                // Then wait for it to respond that it's complete
+                void Shutdown()
+                {
+                    try
+                    {
+                        cts.Cancel();
+                    }
+                    catch (ObjectDisposedException)
+                    {
+                    }
+                    done.Wait();
+                };
 
-            clockController.Run(cts.Token);
-            // Clear the lights after exiting. 
-            // Lights will stay lit even after the program exits unless told to shut off.
-            lightController.Clear();
+                AppDomain.CurrentDomain.ProcessExit += (sender, eventArgs) => Shutdown();
+                Console.CancelKeyPress += (sender, eventArgs) =>
+                {
+                    Shutdown();
+                    // Don't terminate the process immediately, wait for the Main thread to exit gracefully.
+                    eventArgs.Cancel = true;
+                };
+                // Fire primary app loop
+                start(cts.Token);
+                // Execute cleanup
+                cleanup();
+
+                done.Set();
+            }
+            finally
+            {
+
+            }
+
         }
 
         public Program(SpiDevice spi)

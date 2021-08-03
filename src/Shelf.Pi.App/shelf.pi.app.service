@@ -1,0 +1,16 @@
+[Unit]
+#Documentation https://www.freedesktop.org/software/systemd/man/systemd.service.html
+
+Description=Shelf.Pi
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/home/pi/shelf.pi/Shelf.Pi.App
+
+StandardOutput=file:/home/pi/shelf.pi/stdout.log
+StandardError=file:/home/pi/shelf.pi/stderr.log
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
