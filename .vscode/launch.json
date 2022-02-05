@@ -10,7 +10,7 @@
             "request": "launch",
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/src/Shelf.Pi.Emulator/bin/Debug/net5.0-windows/Shelf.Pi.Emulator.dll",
+            "program": "${workspaceFolder}/src/Shelf.Pi.Emulator/bin/Debug/net6.0-windows/Shelf.Pi.Emulator.dll",
             "args": [],
             "cwd": "${workspaceFolder}/src/Shelf.Pi.Emulator",
             // For more information about the 'console' field, see https://aka.ms/VSCode-CS-LaunchJson-Console

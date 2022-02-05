@@ -1,15 +1,16 @@
 [Unit]
 #Documentation https://www.freedesktop.org/software/systemd/man/systemd.service.html
 
-Description=Shelf.Pi
+Description=Shelf.Pi.App
 After=network.target
 
 [Service]
 Type=simple
-ExecStart=/home/pi/shelf.pi/Shelf.Pi.App
+WorkingDirectory=/home/pi/shelf.pi.app/
+ExecStart=/home/pi/shelf.pi.app/Shelf.Pi.App
 
-StandardOutput=file:/home/pi/shelf.pi/stdout.log
-StandardError=file:/home/pi/shelf.pi/stderr.log
+StandardOutput=journal
+StandardError=journal
 Restart=always
 
 [Install]

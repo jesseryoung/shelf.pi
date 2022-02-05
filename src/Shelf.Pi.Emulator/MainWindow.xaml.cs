@@ -8,6 +8,8 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Shelf.Pi.Core;
 using Shelf.Pi.Core.Clock;
 
@@ -154,11 +156,16 @@ namespace Shelf.Pi.Emulator
 
             
 
-            Task.Run(() => {
+            Task.Run(async () => {
+                var host = Daemon.CreateHost()
+                    .ConfigureServices((_, services) => {
+                        services.AddSingleton<ILightController>(this);
+                    })
+                    .Build();
                 var animation = new ClockController(this);
-                var cts = new CancellationTokenSource();
+                using var cts = new CancellationTokenSource();
                 this.Closing += (sender, args) => cts.Cancel();
-                animation.Run(cts.Token);
+                await host.RunAsync(cts.Token);
             });
         }
 
