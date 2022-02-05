@@ -18,22 +18,25 @@ namespace Shelf.Pi.Core.Clock
 
         public void Run(CancellationToken token)
         {
-            
+
             // Set each light box to white
-            foreach(var light in Light.Lights) {
-                light.SetColor(this.lightController, Color.White.WithBrightness(.25));
+            var boxColor = Color.White.WithBrightness(.25);
+            foreach (var light in Light.Lights)
+            {
+                light.SetColor(this.lightController, boxColor);
             }
 
             // Create a color transition that should complete ~2x a second
             var transitionFrames = 60;
             var timeBetweenFrames = 500;
             var colorTransition = ColorTransition.GetRandomTranstion(transitionFrames);
-            
+
             // Loop until told to cancel
-            while (false == token.IsCancellationRequested) 
+            while (false == token.IsCancellationRequested)
             {
                 // Create a new transtion if the old one is complete
-                if (colorTransition.Complete) {
+                if (colorTransition.Complete)
+                {
                     colorTransition = ColorTransition.GetRandomTranstion(transitionFrames, colorTransition.EndColor);
                 }
                 var color = colorTransition.GetNextColor().WithBrightness(.25);
@@ -47,7 +50,7 @@ namespace Shelf.Pi.Core.Clock
                     // on the left side of the segment instead of the right side
                     Digit.Digit1.Show(this.lightController, 1, color, true);
                 }
-                else 
+                else
                 {
                     // Prior to 10:00 the first digit is empty
                     Digit.Digit1.Clear(this.lightController);
