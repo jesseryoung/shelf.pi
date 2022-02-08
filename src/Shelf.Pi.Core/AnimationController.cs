@@ -49,7 +49,7 @@ public class AnimationController : IDisposable
             if (this.animationCancellationToken.IsCancellationRequested)
             {
                 // Wait until the deamon is killed or until the clock is requested to start again.
-                await this.animationStartTask.Task.WaitAsync(cancellationToken);
+                await this.animationStartTask.Task.OrUntilCanceled(cancellationToken);
             }
         }
     }
@@ -77,7 +77,7 @@ public class AnimationController : IDisposable
         while (false == cancellationToken.IsCancellationRequested)
         {
             animation.AnimateFrame(this.lightController);
-            await Task.Delay(animation.FrameDelayMilleseconds, cancellationToken).ContinueWith(tsk => { }); // Ignores exception from the cancel
+            await Task.Delay(animation.FrameDelayMilleseconds).OrUntilCanceled(cancellationToken);
         }
         animation.Cleanup(this.lightController);
     }
