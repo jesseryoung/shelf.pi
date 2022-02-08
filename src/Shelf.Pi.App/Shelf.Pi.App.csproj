@@ -18,5 +18,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="./shelf.pi.app.service" CopyToOutputDirectory="Never" CopyToPublishDirectory="Always" />
+    <Content Include="./appsettings.json" CopyToOutputDirectory="Always" CopyToPublishDirectory="Always" />
+    <Content Include="./appsettings.*.json" CopyToOutputDirectory="Always" CopyToPublishDirectory="Always" />
   </ItemGroup>
 </Project>

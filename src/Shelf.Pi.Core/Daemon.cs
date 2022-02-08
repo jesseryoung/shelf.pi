@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Shelf.Pi.Core.Clock;
 
@@ -9,10 +11,24 @@ public static class Daemon
     {
         return Host
             .CreateDefaultBuilder(args)
+            .ConfigureWebHostDefaults(builder =>
+            {
+                builder.Configure(app =>
+                {
+                    app.UseRouting();
+                    app.UseEndpoints(endpoints =>
+                    {
+                        endpoints.MapGet("/stopAnimations",(AnimationController animationController) => animationController.StopAllAnimations());
+                        endpoints.MapGet("/startClock",(AnimationController animationController) => animationController.StartClock());
+                    });
+                });                
+            })
             .ConfigureServices((_, services) =>
             {
-                services.AddSingleton<ClockController>();
+                services.AddSingleton<ClockAnimation>();
+                services.AddSingleton<AnimationController>();
                 services.AddHostedService<DisplayService>();
             });
     }
 }
+

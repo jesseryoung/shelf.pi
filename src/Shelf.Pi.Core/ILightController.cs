@@ -8,5 +8,7 @@ namespace Shelf.Pi.Core
         void SetPixel(int index, Color color);
 
         void Update();
+
+        void Clear();
     }
 }

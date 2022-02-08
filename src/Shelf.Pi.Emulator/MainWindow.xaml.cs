@@ -162,10 +162,8 @@ namespace Shelf.Pi.Emulator
                         services.AddSingleton<ILightController>(this);
                     })
                     .Build();
-                var animation = new ClockController(this);
-                using var cts = new CancellationTokenSource();
-                this.Closing += (sender, args) => cts.Cancel();
-                await host.RunAsync(cts.Token);
+                    
+                await host.RunAsync();
             });
         }
 
@@ -236,6 +234,15 @@ namespace Shelf.Pi.Emulator
                 }
                 this.pendingUpdates.Clear();
             });
+        }
+
+        public void Clear()
+        {
+            for (int i = 0 ; i < 300; i++) 
+            {
+                this.SetPixel(i, System.Drawing.Color.Black);
+                this.Update();
+            }
         }
     }
 }

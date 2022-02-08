@@ -6,17 +6,15 @@ namespace Shelf.Pi.Core;
 
 public class DisplayService : IHostedService
 {
-    private readonly ClockController clockController;
+    private readonly AnimationController animationController;
 
-    public DisplayService(ClockController clockController)
+    public DisplayService(AnimationController animationController)
     {
-        this.clockController = clockController;
+        this.animationController = animationController;
     }
-    public Task StartAsync(CancellationToken cancellationToken)
+    public async Task StartAsync(CancellationToken cancellationToken)
     {
-        this.clockController.Run(cancellationToken);
-
-        return Task.CompletedTask;
+        await this.animationController.Run(cancellationToken);
     }
 
     public Task StopAsync(CancellationToken cancellationToken)
