@@ -18,8 +18,8 @@ public static class Daemon
                     app.UseRouting();
                     app.UseEndpoints(endpoints =>
                     {
-                        endpoints.MapGet("/stopAnimations",(AnimationController animationController) => animationController.StopAllAnimations());
-                        endpoints.MapGet("/startClock",(AnimationController animationController) => animationController.StartClock());
+                        endpoints.MapPost("/stopAnimations",(AnimationController animationController) => animationController.StopAllAnimations());
+                        endpoints.MapPost("/startClock",(AnimationController animationController) => animationController.StartClock());
                     });
                 });                
             })
